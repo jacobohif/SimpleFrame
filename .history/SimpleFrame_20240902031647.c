@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Create a new frame
+//创建包
 SimpleFrame* create_frame(uint16_t id, uint16_t type, const uint8_t* data, uint16_t data_len) {
     SimpleFrame* frame = (SimpleFrame*)malloc(sizeof(SimpleFrame));
     if (!frame) return NULL;
@@ -23,16 +23,14 @@ SimpleFrame* create_frame(uint16_t id, uint16_t type, const uint8_t* data, uint1
 
     return frame;
 }
-
-// Destroy the frame
+//回收
 void destroy_frame(SimpleFrame* frame) {
     if (frame) {
         if (frame->data) free(frame->data);
         free(frame);
     }
 }
-
-// Serialize the frame to a byte array
+//序列化
 uint8_t* serialize_frame(SimpleFrame* frame, size_t* frame_size) {
     *frame_size = HEADER_SIZE + frame->len + 1;
     uint8_t* buffer = (uint8_t*)malloc(*frame_size);
@@ -54,8 +52,7 @@ uint8_t* serialize_frame(SimpleFrame* frame, size_t* frame_size) {
 
     return buffer;
 }
-
-// Deserialize a byte array to a frame
+//解析包
 SimpleFrame* deserialize_frame(const uint8_t* buffer, size_t buffer_len) {
     if (buffer_len < HEADER_SIZE) return NULL;
 
@@ -65,7 +62,7 @@ SimpleFrame* deserialize_frame(const uint8_t* buffer, size_t buffer_len) {
     uint8_t head_cksum = buffer[7];
 
     if (calculate_header_checksum(id, len, type) != head_cksum) {
-        return NULL; // Header checksum error
+        return NULL; // 头校验和错误
     }
 
     SimpleFrame* frame = create_frame(id, type, &buffer[8], len);
@@ -73,13 +70,12 @@ SimpleFrame* deserialize_frame(const uint8_t* buffer, size_t buffer_len) {
 
     if (calculate_data_checksum(frame->data, len) != buffer[8 + len]) {
         destroy_frame(frame);
-        return NULL; // Data checksum error
+        return NULL; // 数据校验和错误
     }
 
     return frame;
 }
-
-// Calculate the header checksum
+//计算头检验和
 uint8_t calculate_header_checksum(uint16_t id, uint16_t len, uint16_t type) {
     int8_t checksum = 0;
 
@@ -87,24 +83,24 @@ uint8_t calculate_header_checksum(uint16_t id, uint16_t len, uint16_t type) {
     checksum ^= SOF;
 
     // ID
-    checksum ^= (id >> 8) & 0xFF;  // ID High byte
-    checksum ^= id & 0xFF;          // ID Low byte
+    checksum ^= (id >> 8) & 0xFF;  // ID 高字节
+    checksum ^= id & 0xFF;          // ID 低字节
 
     // LEN
-    checksum ^= (len >> 8) & 0xFF;  // LEN High byte
-    checksum ^= len & 0xFF;         // LEN Low byte
+    checksum ^= (len >> 8) & 0xFF;  // LEN 高字节
+    checksum ^= len & 0xFF;         // LEN 低字节
 
     // TYPE
-    checksum ^= (type >> 8) & 0xFF; // TYPE High byte
-    checksum ^= type & 0xFF;        // TYPE Low byte
+    checksum ^= (type >> 8) & 0xFF; // TYPE 高字节
+    checksum ^= type & 0xFF;        // TYPE 低字节
 
-    // Bitwise inversion
+    // 按位取反
     checksum = ~checksum;
 
     return checksum;
 }
 
-// Calculate the data checksum
+//计算data校验和
 unsigned char calculate_data_checksum(unsigned char *data, unsigned char len) {
     unsigned char ret = 0;
 

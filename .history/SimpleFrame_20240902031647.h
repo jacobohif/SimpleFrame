@@ -12,30 +12,30 @@ extern "C" {
 #define HEADER_SIZE 8  // SOF(1) + ID(2) + LEN(2) + TYPE(2) + HEAD_CKSUM(1) + DATA(4) + DATA_CKSUM(1)
 
 typedef struct {
-    uint16_t id;          // Frame ID
-    uint16_t len;         // Data frame length (excluding header)
-    uint16_t type;        // Frame type
-    uint8_t head_cksum;   // Header checksum
-    uint8_t* data;        // Data (variable length)
-    uint8_t data_cksum;   // Data checksum
+    uint16_t id;          // 帧 ID
+    uint16_t len;         // 数据帧长度（不包括头部）
+    uint16_t type;        // 帧类型
+    uint8_t head_cksum;   // 头校验和
+    uint8_t* data;        // 数据（长度可变）
+    uint8_t data_cksum;   // 数据校验和
 } SimpleFrame;
 
-// Create a new frame
+// 创建一个新的帧
 SimpleFrame* create_frame(uint16_t id, uint16_t type, const uint8_t* data, uint16_t data_len);
 
-// Destroy the frame
+// 销毁帧
 void destroy_frame(SimpleFrame* frame);
 
-// Serialize the frame to a byte array
+// 序列化帧到字节数组
 uint8_t* serialize_frame(SimpleFrame* frame, size_t* frame_size);
 
-// Deserialize a byte array to a frame
+// 反序列化字节数组到帧
 SimpleFrame* deserialize_frame(const uint8_t* buffer, size_t buffer_len);
 
-// Calculate the header checksum
+// 计算头校验和
 uint8_t calculate_header_checksum(uint16_t id, uint16_t len, uint16_t type);
 
-// Calculate the data checksum
+// 计算数据校验和
 //uint8_t calculate_data_checksum(const uint8_t* data, uint16_t data_len);
 
 
