@@ -1,1 +1,2 @@
-"# SimpleFrame" 
+A complete implementation of TinyFrame
+It is implemented in standard C, C++ can be used, Arduino...
